@@ -42,8 +42,8 @@ def generate_dynamic_page(client_id, pregunta):
             </head>
             <body>
 	    <div class="container mt-5">
-            </br>
 	    <img class="img-fluid" src="https://cdn-icons-png.flaticon.com/512/7380/7380525.png">
+     	    </br>
 	    <h3>Contesta por favor: <span id="countdowntimer" class="badge badge-secondary">{expiration} seg</span></h3>
             <div class="alert alert-primary" role="alert">{pregunta}</div>
             <form method="post" action="/validate_answer">
