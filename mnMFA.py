@@ -42,7 +42,8 @@ def generate_dynamic_page(client_id, pregunta):
             </head>
             <body>
 	    <div class="container mt-5">
-        <img class="img-fluid" src="https://cdn-icons-png.flaticon.com/512/7380/7380525.png">
+            </br>
+	    <img class="img-fluid" src="https://cdn-icons-png.flaticon.com/512/7380/7380525.png">
 	    <h3>Contesta por favor: <span id="countdowntimer" class="badge badge-secondary">{expiration} seg</span></h3>
             <div class="alert alert-primary" role="alert">{pregunta}</div>
             <form method="post" action="/validate_answer">
@@ -51,7 +52,8 @@ def generate_dynamic_page(client_id, pregunta):
                         <label for="answer">Tu respuesta:</label>
                         <input type="text" class="form-control" id="respuesta" name="respuesta" required>
                 </div>
-                <button type="submit" class="btn btn-primary">Mandar</button>
+                </br>
+		<button type="submit" class="btn btn-primary">Mandar</button>
             </form>
             <!-- Bootstrap JS -->
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
