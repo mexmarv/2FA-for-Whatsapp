@@ -38,7 +38,7 @@ def generate_dynamic_page(client_id, pregunta):
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title>Pregunta Dinámica</title>
                 <!-- Bootstrap CSS -->
-                <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+                <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
             </head>
             <body>
 	    <div class="container mt-5">
@@ -56,10 +56,10 @@ def generate_dynamic_page(client_id, pregunta):
                         <input type="text" class="form-control" id="respuesta" name="respuesta" required>
                 </div>
                 </br>
-		<button type="submit" class="btn btn-primary">Mandar</button>
+		    <button type="submit" class="btn btn-primary">Mandar</button>
             </form>
             <!-- Bootstrap JS -->
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
+            <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
             <script type="text/javascript">
                 var timeleft = {expiration};
                 var downloadTimer = setInterval(function(){{
@@ -73,7 +73,6 @@ def generate_dynamic_page(client_id, pregunta):
         </html>
         """
     return dynamic_page
-
 
 def validate_answer(client_id, respuesta):
     # TODO: if you want to prevalidate answer: Call the external validation API
