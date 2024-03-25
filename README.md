@@ -66,7 +66,7 @@ This command will generate a certificate (cert.pem) and a private key (key.pem) 
 
 You can then change the uvicorn line to work like this:
 ```
-threading.Thread(target=lambda: uvicorn.run(fast_app, host=HOST, port=api_p, ssl_keyfile="key.pem", ssl_certfile="cert.pem">
+threading.Thread(target=lambda: uvicorn.run(fast_app, host=HOST, port=api_p, ssl_keyfile="key.pem", ssl_certfile="cert.pem").start();
 ```
 ## Enjoy!
 
