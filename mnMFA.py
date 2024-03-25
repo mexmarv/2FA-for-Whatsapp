@@ -11,7 +11,7 @@ from fastapi.responses import HTMLResponse
 
 # Server (Replace with the server you are hosting with)
 # HOST = "103.101.203.18"
-HOST = "0.0.0.0" # localhost
+HOST = "0.0.0.0" # localhost 103.89.15.134
 URL_SUFFIX = "http://" + HOST
 
 # Seconds to delete dynamic generated pages (ex: 300 = 5 min)
@@ -23,7 +23,9 @@ web_port = 80
 api_port = 8000
 
 fast_app = FastAPI()
-web_app = Flask(__name__)
+web_app = Flask(__name__,
+    template_folder='./',
+    static_folder='./')
 web_app.config['CORS_HEADERS'] = 'Content-Type'
 
 def generate_dynamic_page(client_id, pregunta):
@@ -129,16 +131,9 @@ def validate_answer_api():
     whatsapp_url = f"https://wa.me/{phone_number}?text=Respuesta: {respuesta}"
     return redirect(whatsapp_url)
 
-
-@web_app.route('/www')
+@web_app.route('/')
 def index():
     return render_template('index.html')
-
-
-@web_app.route('/about')
-def about():
-    return render_template('about.html')
-
 
 if __name__ == '__main__':
     print("\n\n\n....: MFA : Starting expired pages thread ...")
@@ -148,4 +143,3 @@ if __name__ == '__main__':
     print(f"....: MFA : Starting WEB service thread ({web_port})...\n")
     serve(web_app, host=HOST, port=web_port)
     print("... Enter another control-C to close.")
-
