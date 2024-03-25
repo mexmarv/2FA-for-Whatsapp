@@ -53,6 +53,21 @@ The script will be accessible through ports 80 and 8000 on your localhost.
 
 Once the script is running, you can access the dynamically generated pages by visiting the URLs provided by the API. Users can answer the questions, and their responses will be validated and redirected to a WhatsApp deep link for further action.
 
+## HTTPS
+`Generate Self-Signed Certificates:`
+
+You can use OpenSSL to generate self-signed certificates. Run the following commands to generate a private key and a self-signed certificate:
+
+```
+openssl req -x509 -newkey rsa:4096 -nodes -out cert.pem -keyout key.pem -days 365
+```
+
+This command will generate a certificate (cert.pem) and a private key (key.pem) valid for 365 days. Follow the prompts to fill in details like country, organization, etc.
+
+You can then change the uvicorn line to work like this:
+```
+threading.Thread(target=lambda: uvicorn.run(fast_app, host=HOST, port=api_p, ssl_keyfile="key.pem", ssl_certfile="cert.pem">
+```
 ## Enjoy!
 
 With Whatsapp not being able to MFA certain questions and being able to authenticate with systems, this MFA solution is valid as an MFA as long as you can:
