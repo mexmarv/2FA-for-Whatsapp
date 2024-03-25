@@ -14,23 +14,21 @@ HOST = "0.0.0.0" # localhost
 URL_SUFFIX = "http://" + HOST
 
 # Seconds to delete dynamic generated pages (ex: 300 = 5 min)
-expiration = 60
+expiration = 20
 # Dictionary to store dynamic web pages and their expiration times in memory
 dynamic_pages = {}
 # Ports
 web_port = 80
 api_port = 8000
-
+# Apps
 fast_app = FastAPI()
 web_app = Flask(__name__,
     template_folder='./',
     static_folder='./')
 web_app.config['CORS_HEADERS'] = 'Content-Type'
-
-def generate_dynamic_page(client_id, pregunta):
-    # Generate dynamic web page HTML using bootstrap CDN
-    dynamic_page = f"""
-        <!DOCTYPE html>
+# HTML Header & Footer
+header = f"""
+    <!DOCTYPE html>
             <html lang="es">
             <head>
                 <meta charset="UTF-8">
@@ -39,24 +37,9 @@ def generate_dynamic_page(client_id, pregunta):
                 <!-- Bootstrap CSS -->
                 <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
             </head>
-            <body>
-	    <div class="container mt-5">
-            <center>
-	        <img class="img-fluid" width="300" src="https://cdn-icons-png.flaticon.com/512/7380/7380525.png">
-     	    	</br>
-            	</br>
-            </center>
-	    <h3>Please answer in <span id="countdowntimer" class="badge badge-secondary">{expiration} seg</span></h3>
-            <div class="alert alert-primary" role="alert">{pregunta}</div>
-            <form method="post" action="/validate_answer">
-                <input type="hidden" id="client_id" name={client_id}>
-                <div class="form-group">
-                        <label for="answer">Your answer:</label>
-                        <input type="text" class="form-control" id="respuesta" name="respuesta" required>
-                </div>
-                </br>
-		<button type="submit" class="btn btn-primary">Submit</button>
-            </form>
+            <body>"""
+
+footer = f"""
             <!-- Bootstrap JS -->
             <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
             <script type="text/javascript">
@@ -69,9 +52,29 @@ def generate_dynamic_page(client_id, pregunta):
             	}},1000);
             </script>
             </body>
-        </html>
-        """
-    return dynamic_page
+            </html>"""
+
+def generate_dynamic_page(client_id, pregunta):
+    # Generate dynamic web page HTML using bootstrap CDN
+    dynamic_page = f"""
+	        <div class="container mt-5">
+            <center>
+	        <img class="img-fluid" width="300" src="https://cdn-icons-png.flaticon.com/512/7380/7380525.png">
+     	    	</br></br>
+            </center>
+	        <h3>Please answer in <span id="countdowntimer" class="badge badge-secondary">{expiration} seg</span></h3>
+            <div class="alert alert-primary" role="alert">{pregunta}</div>
+            <form method="post" action="/validate_answer">
+                <input type="hidden" id="client_id" name={client_id}>
+                <div class="form-group">
+                        <label for="answer">Your answer:</label>
+                        <input type="text" class="form-control" id="respuesta" name="respuesta" required>
+                </div>
+                </br>
+		    <button type="submit" class="btn btn-primary">Submit</button>
+            </form>"""
+    
+    return (header + dynamic_page + footer)
 
 def validate_answer(client_id, respuesta):
     # TODO: if you want to prevalidate answer: Call the external validation API
@@ -114,7 +117,10 @@ def dynamic_page(page_id):
     if page_id in dynamic_pages:
         return dynamic_pages[page_id]['content']
     else:
-        return "<h1>Dynamic page not found or expired.</h1>"
+        return (header + """
+                <div class="row justify-content-md-center">
+                <div class="col-12 col-md-11 col-lg-9 col-xl-7 col-xxl-6 text-center text-black"></br>
+                <h2 class="display-3 fw-bold mb-3">Dynamic page not found.</h2></div></div>""" + footer)
 
 @web_app.route('/validate_answer', methods=['POST'])
 def validate_answer_api():
