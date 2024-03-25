@@ -9,9 +9,8 @@ from flask import Flask, render_template, request, redirect
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse
 
-# Server (Replace with the server you are hosting with)
-# HOST = "103.101.203.18"
-HOST = "0.0.0.0" # localhost 103.89.15.134
+# Server (Replace with the server you are hosting with if you like)
+HOST = "0.0.0.0" # localhost
 URL_SUFFIX = "http://" + HOST
 
 # Seconds to delete dynamic generated pages (ex: 300 = 5 min)
@@ -42,21 +41,21 @@ def generate_dynamic_page(client_id, pregunta):
             </head>
             <body>
 	    <div class="container mt-5">
-        <center>
+            <center>
 	        <img class="img-fluid" width="300" src="https://cdn-icons-png.flaticon.com/512/7380/7380525.png">
-     	    </br>
-            </br>
-        </center>
-	    <h3>Contesta por favor: <span id="countdowntimer" class="badge badge-secondary">{expiration} seg</span></h3>
+     	    	</br>
+            	</br>
+            </center>
+	    <h3>Please answer in <span id="countdowntimer" class="badge badge-secondary">{expiration} seg</span></h3>
             <div class="alert alert-primary" role="alert">{pregunta}</div>
             <form method="post" action="/validate_answer">
                 <input type="hidden" id="client_id" name={client_id}>
                 <div class="form-group">
-                        <label for="answer">Tu respuesta:</label>
+                        <label for="answer">Your answer:</label>
                         <input type="text" class="form-control" id="respuesta" name="respuesta" required>
                 </div>
                 </br>
-		    <button type="submit" class="btn btn-primary">Mandar</button>
+		<button type="submit" class="btn btn-primary">Submit</button>
             </form>
             <!-- Bootstrap JS -->
             <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
@@ -67,7 +66,7 @@ def generate_dynamic_page(client_id, pregunta):
                     document.getElementById("countdowntimer").textContent = timeleft + " seg";
                 if(timeleft <= 0)
                 clearInterval(downloadTimer);
-            }},1000);
+            	}},1000);
             </script>
             </body>
         </html>
@@ -81,7 +80,6 @@ def validate_answer(client_id, respuesta):
         return response.json().get("correct", False)
     return False
 
-
 def clear_expired_pages():
     while True:
         current_time = time.time()
@@ -94,7 +92,6 @@ def clear_expired_pages():
             print("--- Page expired.")
 
         time.sleep(expiration - 5)  # Check every expiration time - 5 seconds
-
 
 @fast_app.get('/generate_dynamic_page')
 async def generate_dynamic_page_api(client_id: str, pregunta: str):
@@ -112,14 +109,12 @@ async def generate_dynamic_page_api(client_id: str, pregunta: str):
     else:
         raise HTTPException(status_code=500, detail="Failed to generate dynamic page.")
 
-
 @web_app.route('/<page_id>')
 def dynamic_page(page_id):
     if page_id in dynamic_pages:
         return dynamic_pages[page_id]['content']
     else:
         return "<h1>Dynamic page not found or expired.</h1>"
-
 
 @web_app.route('/validate_answer', methods=['POST'])
 def validate_answer_api():
@@ -138,6 +133,10 @@ def validate_answer_api():
 @web_app.route('/')
 def index():
     return render_template('index.html')
+
+@web_app.route('/favicon.ico')
+def favicon():
+    return render_template('favicon.ico')
 
 if __name__ == '__main__':
     print("\n\n\n....: MFA : Starting expired pages thread ...")
