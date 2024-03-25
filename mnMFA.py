@@ -134,10 +134,6 @@ def validate_answer_api():
 def index():
     return render_template('index.html')
 
-@web_app.route('/favicon.ico')
-def favicon():
-    return render_template('favicon.ico')
-
 if __name__ == '__main__':
     print("\n\n\n....: MFA : Starting expired pages thread ...")
     threading.Thread(target=clear_expired_pages, daemon=True).start()
