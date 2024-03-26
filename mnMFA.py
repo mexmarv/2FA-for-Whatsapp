@@ -87,14 +87,14 @@ def clear_expired_pages():
     while True:
         current_time = time.time()
         try:
-            for page_id in dynamic_pages:
-                expiration_time = dynamic_pages[page_id]['expiration_time']
-                if expiration_time < current_time:
-                    del dynamic_pages[page_id]
+            expired_pages = [page_id for page_id in dynamic_pages if dynamic_pages[page_id]['expiration_time'] < current_time]
+            for page_id in expired_pages:
+                del dynamic_pages[page_id]
+                print(f"--- Deleted: {page_id}")
         except:
-            print("--- Page expired.")
+            print("--- Dynamic Array resized.")
 
-        time.sleep(expiration - 5)  # Check every expiration time - 5 seconds
+        time.sleep(expiration - 5)  # Check every expiration time - 5 seconds.
 
 @fast_app.get('/generate_dynamic_page')
 async def generate_dynamic_page_api(client_id: str, pregunta: str):
