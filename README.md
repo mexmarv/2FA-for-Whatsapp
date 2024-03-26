@@ -68,12 +68,21 @@ You can then change the uvicorn line to work like this:
 ```
 threading.Thread(target=lambda: uvicorn.run(fast_app, host=HOST, port=api_port, ssl_keyfile="key.pem", ssl_certfile="cert.pem")).start();
 ```
-## Enjoy!
+## Notes:
 
 With Whatsapp not being able to MFA certain questions and being able to authenticate with systems, this MFA solution is valid as an MFA as long as you can:
 1. Call from your whatsapp/chatbot logic the API (in https://) where you supply the clientID and question to be asked.
 2. You can the modify the validate_answer() method to call a webhook back with the right answer, and then just redirect to whatsapp conversation with you having the control back at the server.
-3. The demo just returns the answer to Whatsapp (not using validate_answer() for demo purposes). Do not do this as people could scroll and see answers in chat (disappearing messages are not good in Whatsapp)
+3. The demo just returns the answer to Whatsapp (not using validate_answer() for demo purposes). Do not do this as people could scroll and see answers in chat (disappearing messages are not good in Whatsapp) unless you can encrypt it with the dynamic page random generator
+4. I added 'loadtest.py' which for fun you can loadtest with as many requests and threads to test your Docker or production environment. I disabled certificate SSL checking as this takes too much time to validate. Some interesting results in a 1 CPU, 8 GB RAM Docker Instance runing latest Ubuntu in docker:
+```
+1000 tries with 100 threads. Running on Docker, no certificate checking.
+Total time taken: 6.910074949264526 seconds
+Total successful requests: 1000
+Total errors: 0
+Total requests: 1000
+Transactions per second (TPS): 144.7162306258972
+```
 
 Enjoy!
 Marvin Nahmias
