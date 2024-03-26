@@ -4,7 +4,7 @@ import time
 import socket
 
 # Configuration
-API_URL = "https://mfa.makersmexico.org/generate_dynamic_page"  
+API_URL = "https://localhost/generate_dynamic_page"  
 CLIENT_ID = "your_client_id"
 PREGUNTA = "your_question"
 NUM_REQUESTS = 1000  # Number of requests to send
