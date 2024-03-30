@@ -72,7 +72,7 @@ Once the script is running, you can access the dynamically generated pages by vi
 ## Notes:
 
 With Whatsapp not being able to MFA certain questions and being able to authenticate with systems, this MFA solution is valid as an MFA as long as you can:
-1. Generate a workflow in chatfuel that validates the user for certain transactions. An example workflow is attached.
+1. Generate a workflow in chatfuel that validates the user for certain transactions. An example workflow is attached. [<img src="/chatfuel.png">]
 2. Reading through code is easy, you can integrate back with any external API to make use of answers and trasnactions.
 3. Do not return the answers through the chat channel, this defeats the purpose of 2FA.
 4. I added `loadtest.py` which for fun you can loadtest with as many requests and threads to test your Docker or production environment. I disabled certificate SSL checking as this takes too much time to validate. Some interesting results in a 1 CPU, 8 GB RAM Docker Instance runing latest Ubuntu in docker:
