@@ -343,7 +343,7 @@ if __name__ == '__main__':
     print("\n\n\n....: MFA : Starting expired pages thread ...")
     threading.Thread(target=clear_expired_pages, daemon=True).start()
     print(f"....: MFA : Starting API service thread ({api_port})...")
-    threading.Thread(target=lambda: uvicorn.run(fast_app, host=HOST, port=api_port, ssl_keyfile="private.key", ssl_certfile="certificate.crt")).start()
+    threading.Thread(target=lambda: uvicorn.run(fast_app, host=HOST, port=api_port)).start()
     print(f"....: MFA : Starting WEB service thread ({web_port})...\n")
     run_simple(HOST, web_port, web_app, ssl_context=ssl_context)
     print("... Enter another control-C to close.")
