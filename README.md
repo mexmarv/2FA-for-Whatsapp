@@ -69,12 +69,13 @@ You can always get free SSLs for 90 days from many venders, but both the key and
 
 Once the script is running, you can access the dynamically generated pages by visiting the URLs provided by the API. Users can answer the multiple answers form two random generators, and their responses will be validated, sent back to Chatfuel, and redirected to a WhatsApp deep link for further action as your chatbot responds.
 
-Also, for every successful answer, the timestamp and IP adress with other data is saved in 'logs.db', which you can use to help if a user states that he did not do the transaction, you have information he answer correctly forn an IP and some extra data. Non repudiation for certain laws, this DB helps.
+Also, for every successful answer, the timestamp and IP adress with other data is saved in ´logs.db´, which you can use to help if a user states that he did not do the transaction, you have information he answer correctly forn an IP and some extra data. Non repudiation for certain laws, this DB helps.
 
 ## Notes:
 
 With Whatsapp not being able to MFA certain questions and being able to authenticate with systems, this MFA solution is valid as an MFA as long as you can:
-1. Generate a workflow in chatfuel that validates the user for certain transactions. An example workflow is attached. [<img src="/chatfuel.png">]
+1. Generate a workflow in chatfuel that validates the user for certain transactions. An example workflow is attached.
+   [<img src="/chatfuel.png">]
 2. Reading through code is easy, you can integrate back with any external API to make use of answers and trasnactions.
 3. Do not return the answers through the chat channel, this defeats the purpose of 2FA.
 4. I added `loadtest.py` which for fun you can loadtest with as many requests and threads to test your Docker or production environment. I disabled certificate SSL checking as this takes too much time to validate. Some interesting results in a 1 CPU, 8 GB RAM Docker Instance runing latest Ubuntu in docker:
