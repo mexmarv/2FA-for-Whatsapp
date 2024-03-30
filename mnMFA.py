@@ -41,7 +41,7 @@ header = """
             <body>
      """
 
-footer = """
+footer = f"""
             <script type="text/javascript">
                 var timeleft = {expiration};
                 var downloadTimer = setInterval(function(){{
@@ -310,7 +310,6 @@ def validate_answer_api():
     respuesta = request.form.get("respuesta")
     ip_data = request.form.get("refdata")
     telefono = request.form.get("telefono")
-    # print("El cliente: " + ip_data)
     
     if page_id in dynamic_pages:
         respuesta_esperada = dynamic_pages[page_id]['respuesta']
@@ -322,6 +321,9 @@ def validate_answer_api():
      # Validate the Answer
     print(respuesta_esperada + " y lo que llego " + respuesta)
     if (respuesta == respuesta_esperada): # Correct Answer
+        # Enter in DB
+        insert_log(ip_data, telefono)
+        print("....: Logged: " + ip_data)
         # Validate in ChatFuel and answer
         chatfuel_api = f"https://api.chatfuel.com/bots/{BOT_ID}/users/{client_id}/send?chatfuel_token={CHATFUEL_TOKEN}&chatfuel_flow_name={flow_name}&user_validated=true"
         # Redirect to a WhatsApp deep link
@@ -337,11 +339,11 @@ def validate_answer_api():
 
 if __name__ == '__main__':
     ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS)
-    ssl_context.load_cert_chain('cert.pem', 'key.pem')
+    ssl_context.load_cert_chain('certificate.crt', 'private.key')
     print("\n\n\n....: MFA : Starting expired pages thread ...")
     threading.Thread(target=clear_expired_pages, daemon=True).start()
     print(f"....: MFA : Starting API service thread ({api_port})...")
-    threading.Thread(target=lambda: uvicorn.run(fast_app, host=HOST, port=api_port)).start()
+    threading.Thread(target=lambda: uvicorn.run(fast_app, host=HOST, port=api_port, ssl_keyfile="private.key", ssl_certfile="certificate.crt")).start()
     print(f"....: MFA : Starting WEB service thread ({web_port})...\n")
     run_simple(HOST, web_port, web_app, ssl_context=ssl_context)
     print("... Enter another control-C to close.")
