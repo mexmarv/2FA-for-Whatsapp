@@ -2,6 +2,7 @@
 
 This repository contains Pythn code for implementing Two-Factor Authentication (2FA) using known answer (birth date) from a client_id for WhatsApp/Chat Bots. This project allows you to generate dynamic web pages with questions for users to answer, validate their responses, and redirect them to a WhatsApp deep link for further interaction, while responding back to chatfuel to validate the user for the desired flow or block. You can learn from this repository and integrate accordingly.
 
+[![Github All Releases](https://img.shields.io/github/downloads/mexmarv/2FA-for-Whatsapp/total.svg)]()
 ## Configuration
 
 Before running the script, you need to configure the following variables:
