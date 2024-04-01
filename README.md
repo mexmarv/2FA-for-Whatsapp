@@ -1,8 +1,9 @@
 # 2FA for Whatsapp/Chatbots using Chatfuel (if needed) and known answers from client_id
 
 This repository contains Pythn code for implementing Two-Factor Authentication (2FA) using known answer (birth date) from a client_id for WhatsApp/Chat Bots. This project allows you to generate dynamic web pages with questions for users to answer, validate their responses, and redirect them to a WhatsApp deep link for further interaction, while responding back to chatfuel to validate the user for the desired flow or block. You can learn from this repository and integrate accordingly.
-
-[![Github All Releases](https://img.shields.io/github/downloads/mexmarv/2FA-for-Whatsapp/total.svg)]()
+[![GitHub tag](https://img.shields.io/github/tag/mexmarv/2FA-for-Whatsapp?include_prereleases=&sort=semver&color=blue)](https://github.com/mexmarv/2FA-for-Whatsapp/releases/)
+[![License](https://img.shields.io/badge/License-MIT-blue)](#license)
+[![issues - 2FA-for-Whatsapp](https://img.shields.io/github/issues/mexmarv/2FA-for-Whatsapp)](https://github.com/mexmarv/2FA-for-Whatsapp/issues)
 ## Configuration
 
 Before running the script, you need to configure the following variables:
@@ -73,7 +74,7 @@ Once the script is running, you can access the dynamically generated pages by vi
 Also, for every successful answer, the timestamp and IP adress with other data is saved in ´logs.db´, which you can use to help if a user states that he did not do the transaction, you have information he answer correctly forn an IP and some extra data. Non repudiation for certain laws, this DB helps.
 
 ## Notes:
-
+[![view - Documentation](https://img.shields.io/badge/view-Documentation-blue?style=for-the-badge)](/docs/ "Go to project documentation")
 With Whatsapp not being able to MFA certain questions and being able to authenticate with systems, this MFA solution is valid as an MFA as long as you can:
 1. Generate a workflow in chatfuel that validates the user for certain transactions. An example workflow is attached.
    <center><img src="/chatfuel.png"/></center>
@@ -94,4 +95,4 @@ Marvin Nahmias
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+Released under [MIT](/LICENSE) by [@mexmarv](https://github.com/mexmarv).
