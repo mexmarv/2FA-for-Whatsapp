@@ -1,24 +1,27 @@
-###############################################################
-# 2FA Known Questions from client_id for Whatsapp/Chat Bots   #
-# Marvin Nahmias, 2024.                                       #
-###############################################################
+##############################################################
+# 2FA Seconf Factor Authenticator for Whatsapp/Chat Bots     #
+# Marvin Nahmias, 2024.                                      #
+##############################################################
 
 import ssl, string, time, threading, requests, random, uvicorn, re, sqlite3
 from datetime import datetime, timedelta
 from werkzeug.serving import run_simple
 from flask import Flask, render_template, request, redirect
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import HTMLResponse
 
 # Server (Replace with the server you are hosting with if you like)
 HOST = "0.0.0.0" # localhost
 URL_SUFFIX = "https://" + HOST
-CHATFUEL_TOKEN = "YOUR TOKEM"
-BOT_ID = "YOUR BOT ID"
+CHATFUEL_TOKEN = "YOUR CHATFUEL TOKEN"
+BOT_ID = "YOUR CHATFUEL BOT ID"
 # Seconds to delete dynamic generated pages (ex: 300 = 5 min)
 expiration = 60
+phone_number = "+520000000000"  # Replace with your WhatsApp business number
+whatsapp_url = f"https://wa.me/{phone_number}"
 # Dictionary to store dynamic web pages and their expiration times in memory
 dynamic_pages = {}
+# Mutex for thread safety
+mutex = threading.Lock()
 
 # Ports
 web_port = 443
@@ -31,7 +34,7 @@ header = """
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Pregunta Dinámica</title>
+                <title>2FA</title>
                 <!-- Bootstrap CSS -->
                 <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
                 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -54,46 +57,71 @@ footer = f"""
             </body>
             </html>"""
 
-ip_data_get = """
-    <script>
-        // Function to fetch IP address
-        async function getIPAddress() {
-            const response = await fetch('https://api.ipify.org?format=json');
-            const data = await response.json();
-            return data.ip;
+new_ip_data = """
+<script>
+    // Function to fetch IP address
+    async function getIPAddress() {
+        const response = await fetch('https://api.ipify.org?format=json');
+        const data = await response.json();
+        return data.ip;
+    }
+
+    // Function to fetch location data based on IP
+    async function getLocation(ip) {
+        const response = await fetch('https://ipapi.co/' + ip + '/json/');
+        const data = await response.json();
+        return data;
+    }
+
+    // Function to get browser and device information
+    function getBrowserAndDeviceInfo() {
+        const browserInfo = {
+            userAgent: navigator.userAgent,
+            language: navigator.language,
+            platform: navigator.platform,
+            cookieEnabled: navigator.cookieEnabled,
+            screenWidth: window.screen.width,
+            screenHeight: window.screen.height,
+            screenWidthAvailable: window.screen.availWidth,
+            screenHeightAvailable: window.screen.availHeight
+        };
+        return browserInfo;
+    }
+
+    // Function to update the hidden field with IP, location, browser, and device data
+    async function updateHiddenField() {
+        try {
+            const ip = await getIPAddress();
+            const locationData = await getLocation(ip);
+            const browserDeviceInfo = getBrowserAndDeviceInfo();
+
+            // Constructing a JSON string with IP, location, browser, and device data
+            const blobData = JSON.stringify({
+                ip: ip,
+                city: locationData.city,
+                country: locationData.country_name,
+                latitude: locationData.latitude,
+                longitude: locationData.longitude,
+                browserInfo: browserDeviceInfo
+            });
+
+            // Update the hidden field
+            document.getElementById('refdata').value = blobData;
+
+            // Return the blob data
+            return blobData;
+        } catch (error) {
+            console.error('Error fetching IP, location, browser, and device info:', error);
+            return null; // Return null if an error occurs
         }
-
-        // Function to fetch location data based on IP
-        async function getLocation(ip) {
-            const response = await fetch(`https://ipapi.co/${ip}/json/`);
-            const data = await response.json();
-            return data;
-        }
-
-        // Function to update the hidden field with IP and location data
-        async function updateHiddenField() {
-            try {
-                const ip = await getIPAddress();
-                const locationData = await getLocation(ip);
-
-                // Example: Constructing a JSON string with IP and location data
-                const blobData = JSON.stringify({
-                    ip: ip,
-                    city: locationData.city,
-                    country: locationData.country_name,
-                    latitude: locationData.latitude,
-                    longitude: locationData.longitude
-                });
-
-                // Update the hidden field
-                document.getElementById('refdata').value = blobData;
-            } catch (error) {
-                console.error('Error fetching IP and location:', error);
-            }
-        }
-        // Call the update function when the page loads
-        window.onload = updateHiddenField;
-    </script>"""
+    }
+    // Call the update function when the page loads
+    window.onload = async function() {
+        const updatedData = await updateHiddenField();
+        // You can use 'updatedData' here if needed
+    };
+</script>
+"""
 
 def insert_log(entrada, telefono):
     # Connect to the database
@@ -124,7 +152,7 @@ def generate_dynamic_page(client_id, page_id, flow_name, pregunta, options, tele
 	        <img class="img-fluid" width="300" src="https://cdn-icons-png.flaticon.com/512/7380/7380525.png">
      	    	</br></br>
             </center>
-	        <h3>Por favor contesta en <span id="countdowntimer" class="badge badge-secondary">{expiration} seg.</span></h3>
+	        <h3>Please answer in <span id="countdowntimer" class="badge badge-secondary">{expiration} sec</span></h3>
             <div class="alert alert-primary" role="alert"><bold>{pregunta}</bold></div>
             <form method="post" action="/validate_answer">
                 <input type="hidden" id="client_id" name="client_id" value="{client_id}">
@@ -133,14 +161,13 @@ def generate_dynamic_page(client_id, page_id, flow_name, pregunta, options, tele
                 <input type="hidden" id="flow_name" name="flow_name" value="{flow_name}">
                 <input type="hidden" id="refdata" name="refdata" value="">
                 """
-    dynamic_questions = cuatro_preguntas(pregunta, options) 
+    dynamic_questions = preguntas(pregunta, options) 
     
     dynamic_end = """
-                </br>
-		    <button type="submit" class="btn btn-primary">Mandar</button>
+                </br><center><button type="submit" class="btn btn-success">Validate</button></center>
             </form>"""
     
-    dynamic_page += header + dynamic_questions + dynamic_end + ip_data_get + footer
+    dynamic_page += header + dynamic_questions + dynamic_end + new_ip_data + footer
     
     return dynamic_page
 
@@ -148,42 +175,15 @@ def clear_expired_pages():
     while True:
         current_time = time.time()
         try:
-            expired_pages = [page_id for page_id in dynamic_pages if dynamic_pages[page_id]['expiration_time'] < current_time]
-            for page_id in expired_pages:
-                del dynamic_pages[page_id]
-                print(f"--- Deleted: {page_id}")
+            with mutex:
+                expired_pages = [page_id for page_id in dynamic_pages if dynamic_pages[page_id]['expiration_time'] < current_time]
+                for page_id in expired_pages:
+                    del dynamic_pages[page_id]
+                    print(f"--- Deleted: {page_id}")
         except:
             print("--- Dynamic Array resized.")
 
         time.sleep(expiration + 1)  # Check expiration + 1 seg
-
-def generate_birth_dates(correct_date):
-    # Convert the correct date string to a datetime object
-    correct_date = datetime.strptime(correct_date, '%Y-%m-%d')
-    
-    # Generate three random dates around the correct date (within a range of 60 days before or after)
-    wrong_dates = []
-    for _ in range(3):
-        days_difference = random.randint(-60, 60)
-        wrong_date = correct_date + timedelta(days=days_difference)
-        # Ensure the wrong date is not the same as the correct date
-        while wrong_date == correct_date:
-            days_difference = random.randint(-10, 10)
-            wrong_date = correct_date + timedelta(days=days_difference)
-        wrong_dates.append(wrong_date.strftime('%Y-%m-%d'))
-    
-    # Add the correct date to the list of wrong dates
-    all_dates = wrong_dates + [correct_date.strftime('%Y-%m-%d')]
-    # Shuffle the list to randomize the order of dates
-    random.shuffle(all_dates)
-    
-    return all_dates
-
-def sum_date_digits(date):
-    # Extract day and month from the date
-    month, day = map(int, date.split('-')[1:])
-    # Sum the digits of day and month separately
-    return sum(map(int, str(month))) + sum(map(int, str(day)))
 
 def sum_month_day(date):
     # Extract month and day from the date
@@ -191,27 +191,92 @@ def sum_month_day(date):
     # Sum the entire numbers of month and day
     return month + day
 
-def generate_sums(correct_date, possible_dates):
+def generate_birth_dates_none(correct_date):
+    # Convert the correct date string to a datetime object
+    correct_date_obj = datetime.strptime(correct_date, '%Y-%m-%d')
+    
+    # Generate four unique random dates
+    options = set()
+    while len(options) < 4:
+        days_difference = random.randint(-60, 60)
+        random_date = correct_date_obj + timedelta(days=days_difference)
+        if random_date != correct_date_obj:  # Exclude the correct date
+            options.add(random_date.strftime('%Y-%m-%d'))
+    
+    # Convert set to list
+    options_list = list(options)
+    
+    # Add the correct date to the options
+    options_list.append(correct_date)
+    
+    # Shuffle options
+    random.shuffle(options_list)
+    
+    # Check if "Ninguna de las opciones" should be included
+    none_option = "Ninguna de las opciones."
+    if random.random() < 0.50:  # Probability of 50% for "Ninguna de las opciones" to be included
+        # Randomly select an index to replace with "Ninguna de las opciones"
+        replace_index = random.randint(0, min(len(options_list)-1, 4))
+        if options_list[replace_index] == correct_date:
+            options_list[replace_index] = none_option
+            flag = True
+        else:
+            options_list[replace_index] = none_option
+            flag = False
+    else:
+        flag = False
+    
+    return (options_list, flag)
+
+def generate_sums_none(correct_date):
     # Calculate the sum of the correct date's digits
-    correct_sum = sum_month_day(correct_date)
+    correct_sum = sum(int(digit) for digit in correct_date.split('-')[1:])
     
-    # Generate three random sums
-    wrong_sums = []
-    while len(wrong_sums) < 3:
-        random_sum = sum_date_digits(random.choice(possible_dates))
-        # Ensure the random sum is not the same as the correct sum
-        if random_sum != correct_sum and random_sum not in wrong_sums:
-            wrong_sums.append(random_sum)
+    # Generate four unique random sums
+    options = set()
+    while len(options) < 4:
+        random_sum = random.randint(2, 12)  # Minimum sum is 2 (for January 1st)
+        if random_sum != correct_sum:  # Exclude the correct sum
+            options.add(random_sum)
     
-    # Add the correct sum to the list of wrong sums
-    all_sums = wrong_sums + [correct_sum]
+    # Convert set to list
+    options_list = list(options)
     
-    # Shuffle the list to randomize the order of sums
-    random.shuffle(all_sums)
+    # Add the correct sum to the options
+    options_list.append(correct_sum)
+    
+    # Shuffle options
+    random.shuffle(options_list)
+    
+    # Calculate the sum of the month and day
+    month = int(correct_date.split('-')[1])
+    day = int(correct_date.split('-')[2])
+    correct_sum_md = month + day
+    
+    # Add the sum of month and day to the options
+    options_list.append(correct_sum_md)
+    
+    # Check if "Ninguna de las opciones" should be included
+    none_option = "Ninguna de las opciones."
+    if random.random() < 0.50:  # Probability of 50% for "Ninguna de las opciones" to be included
+        # Randomly select an index to replace with "Ninguna de las opciones"
+        replace_index = random.randint(0, min(len(options_list)-1, 4))
+        if options_list[replace_index] == correct_sum:
+            options_list[replace_index] = none_option
+            flag = True
+        else:
+            options_list[replace_index] = none_option
+            flag = False
+    else:
+        flag = False
+    
+    # Ensure exactly 5 options are returned
+    if len(options_list) > 5:
+        options_list = options_list[:5]
+    
+    return (options_list, flag)
 
-    return all_sums
-
-def cuatro_preguntas(question_text, options):
+def preguntas(question_text, options):
     html = """
     <div class="container">
         <div class="row">
@@ -235,12 +300,23 @@ def cuatro_preguntas(question_text, options):
     return html
 
 # Apps
-fast_app = FastAPI()
+fast_app = FastAPI(
+    title="MFA - NoNoAPP",
+    description="2FA Dynamic Page Generator and Validator.",
+    contact={
+        "name": "Marvin NoNo.App",
+        "url": "http://www.nonoapp.com/",
+        "email": "marvin@nonoapp.com",
+    },
+    license_info={
+        "name": "Apache 2.0",
+        "url": "https://www.apache.org/licenses/LICENSE-2.0.html",
+    },
+)
 web_app = Flask(__name__)
 web_app.config['CORS_HEADERS'] = 'Content-Type'
 
 @fast_app.get('/generate_dynamic_page')
-
 async def generate_dynamic_page_api(client_id: str, telefono: str, flow_name: str, fecha_cumple: str):
     if not client_id:
         raise HTTPException(status_code=400, detail="client_id is required")
@@ -260,28 +336,34 @@ async def generate_dynamic_page_api(client_id: str, telefono: str, flow_name: st
     page_id = ''.join(random.choices(string.ascii_letters + string.digits, k=6))
 
     sel_preguntas = random.randint(1, 2)  # Selecciona entre dos posibilidades de fecha_cumple
-    possible_dates = generate_birth_dates(fecha_cumple)
-    possible_sums = generate_sums(fecha_cumple, possible_dates)
+ 
+    possible_dates, flag_d = generate_birth_dates_none(fecha_cumple)
+    possible_sums, flag_s = generate_sums_none(fecha_cumple)
     pregunta = ""
     respuestas = []
 
     if sel_preguntas == 1:
         pregunta = "¿Cuál es tu fecha de nacimiento?"
-        possible_dates.append("Ninguna de las anteriores.")  # Añadir NDLA
         respuestas = possible_dates
-        la_respuesta = fecha_cumple
+        if (flag_d == False):
+            la_respuesta = fecha_cumple
+        if (flag_d == True):
+            la_respuesta = "Ninguna de las opciones."
     elif sel_preguntas == 2:
         pregunta = "¿Cuál es la suma del mes + día de tu cumpleaños (M+D)?"
-        possible_sums.append("Ninguna de las anteriores.")  # Añadir NDLA
         respuestas = possible_sums
-        la_respuesta = str(sum_month_day(fecha_cumple))
+        if (flag_s == False):
+            la_respuesta = str(sum_month_day(fecha_cumple))
+        if (flag_s == True):
+            la_respuesta = "Ninguna de las opciones."
 
     dynamic_page = generate_dynamic_page(client_id, page_id, flow_name, pregunta, respuestas, telefono)
     
     if dynamic_page:
         # Set expiration time for expiration time from now
         expiration_time = time.time() + expiration
-        dynamic_pages[page_id] = {'content': dynamic_page, 'expiration_time': expiration_time, 'respuesta': la_respuesta}
+        with mutex:
+            dynamic_pages[page_id] = {'content': dynamic_page, 'expiration_time': expiration_time, 'respuesta': la_respuesta}
         return {"dynamic_url": f"{URL_SUFFIX}/{page_id}"}
     else:
         raise HTTPException(status_code=500, detail="Failed to generate dynamic page.")
@@ -292,15 +374,24 @@ def index():
 
 @web_app.route('/<page_id>')
 def dynamic_page(page_id):
-    if page_id in dynamic_pages:
-        return dynamic_pages[page_id]['content']
-    else:
-        return (header + """
-                <div class="row justify-content-md-center">
-                <div class="col-12 col-md-11 col-lg-9 col-xl-7 col-xxl-6 text-center text-black border border-danger"></br>
-                <h3 class="display-3 fw-bold mb-3">Página dinámica no encontrada.</h3>
-                <h2>Intenta de nuevo desde tu chat.</h2>
-                </div></div>""" + footer)
+    with mutex:
+        if page_id in dynamic_pages:
+            return dynamic_pages[page_id]['content']
+        else:
+            return (header + f"""
+                    <div class="container mt-5">
+                    <center>
+	                    <img class="img-fluid" width="300" src="https://cdn-icons-png.flaticon.com/512/7380/7380525.png">
+     	    	    </br></br>
+                    </center>
+                    <div class="row justify-content-md-center">
+                    <div class="col-12 col-md-11 col-lg-9 col-xl-7 col-xxl-6 text-center text-black"></br>
+                    <h5 class="display-4 fw-bold mb-3">Dynamic Page not found!</h5>
+                    <h6>Try again from your whatsapp.</h6>
+                    </div></div><center>
+                    <a href="{whatsapp_url}" class="btn btn-success" role="button">Back to chat</a>
+                    </center>
+                    """ + footer)
 
 @web_app.route('/validate_answer', methods=['GET', 'POST'])
 def validate_answer_api():
@@ -312,38 +403,35 @@ def validate_answer_api():
     telefono = request.form.get("telefono")
     
     if page_id in dynamic_pages:
-        respuesta_esperada = dynamic_pages[page_id]['respuesta']
+        with mutex:
+            respuesta_esperada = dynamic_pages[page_id]['respuesta']
     else:
         respuesta_esperada = ""
 
-    phone_number = "+15555555555"  # Replace with your WhatsApp business number
-
      # Validate the Answer
-    print(respuesta_esperada + " y lo que llego " + respuesta)
     if (respuesta == respuesta_esperada): # Correct Answer
         # Enter in DB
         insert_log(ip_data, telefono)
-        print("....: Logged: " + ip_data)
+        # print("....: Logged: " + ip_data)
         # Validate in ChatFuel and answer
         chatfuel_api = f"https://api.chatfuel.com/bots/{BOT_ID}/users/{client_id}/send?chatfuel_token={CHATFUEL_TOKEN}&chatfuel_flow_name={flow_name}&user_validated=true"
-        # Redirect to a WhatsApp deep link
-        whatsapp_url = f"https://wa.me/{phone_number}"
+        # Redirect to a WhatsApp deep link after posting to chatfuel
         response = requests.post(chatfuel_api)
         return redirect(whatsapp_url)
     else:
         # Validate in ChatFuel and answer
         chatfuel_api = f"https://api.chatfuel.com/bots/{BOT_ID}/users/{client_id}/send?chatfuel_token={CHATFUEL_TOKEN}&chatfuel_flow_name={flow_name}&user_validated=false"
-        whatsapp_url = f"https://wa.me/{phone_number}"
+         # Redirect to a WhatsApp deep link after posting to chatfuel
         response = requests.post(chatfuel_api)
         return redirect(whatsapp_url)
 
 if __name__ == '__main__':
-    ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS)
+    ssl_context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
     ssl_context.load_cert_chain('certificate.crt', 'private.key')
     print("\n\n\n....: MFA : Starting expired pages thread ...")
     threading.Thread(target=clear_expired_pages, daemon=True).start()
     print(f"....: MFA : Starting API service thread ({api_port})...")
-    threading.Thread(target=lambda: uvicorn.run(fast_app, host=HOST, port=api_port)).start()
+    threading.Thread(target=lambda: uvicorn.run(fast_app, host=HOST, port=api_port, ssl_keyfile="private.key", ssl_certfile="certificate.crt")).start()
     print(f"....: MFA : Starting WEB service thread ({web_port})...\n")
     run_simple(HOST, web_port, web_app, ssl_context=ssl_context)
     print("... Enter another control-C to close.")
