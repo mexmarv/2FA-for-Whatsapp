@@ -1,5 +1,5 @@
 ##############################################################
-# 2FA Seconf Factor Authenticator for Whatsapp/Chat Bots     #
+# 2FA Second Factor Authenticator for Whatsapp/Chat Bots     #
 # Marvin Nahmias, 2024.                                      #
 ##############################################################
 
@@ -212,10 +212,10 @@ def generate_birth_dates_none(correct_date):
     # Shuffle options
     random.shuffle(options_list)
     
-    # Check if "Ninguna de las opciones" should be included
-    none_option = "Ninguna de las opciones."
-    if random.random() < 0.50:  # Probability of 50% for "Ninguna de las opciones" to be included
-        # Randomly select an index to replace with "Ninguna de las opciones"
+    # Check if "None of the options" should be included
+    none_option = "None of the options."
+    if random.random() < 0.50:  # Probability of 50% for "None of the options" to be included
+        # Randomly select an index to replace with "None of the options"
         replace_index = random.randint(0, min(len(options_list)-1, 4))
         if options_list[replace_index] == correct_date:
             options_list[replace_index] = none_option
@@ -256,10 +256,10 @@ def generate_sums_none(correct_date):
     # Add the sum of month and day to the options
     options_list.append(correct_sum_md)
     
-    # Check if "Ninguna de las opciones" should be included
-    none_option = "Ninguna de las opciones."
-    if random.random() < 0.50:  # Probability of 50% for "Ninguna de las opciones" to be included
-        # Randomly select an index to replace with "Ninguna de las opciones"
+    # Check if "None of the options" should be included
+    none_option = "None of the options."
+    if random.random() < 0.50:  # Probability of 50% for "None of the options" to be included
+        # Randomly select an index to replace with "None of the options"
         replace_index = random.randint(0, min(len(options_list)-1, 4))
         if options_list[replace_index] == correct_sum:
             options_list[replace_index] = none_option
@@ -343,19 +343,19 @@ async def generate_dynamic_page_api(client_id: str, telefono: str, flow_name: st
     respuestas = []
 
     if sel_preguntas == 1:
-        pregunta = "¿Cuál es tu fecha de nacimiento?"
+        pregunta = "¿What is your DOB?"
         respuestas = possible_dates
         if (flag_d == False):
             la_respuesta = fecha_cumple
         if (flag_d == True):
-            la_respuesta = "Ninguna de las opciones."
+            la_respuesta = "None of the options."
     elif sel_preguntas == 2:
-        pregunta = "¿Cuál es la suma del mes + día de tu cumpleaños (M+D)?"
+        pregunta = "¿What is the sum of your Month + Day of your DOB (M+D)?"
         respuestas = possible_sums
         if (flag_s == False):
             la_respuesta = str(sum_month_day(fecha_cumple))
         if (flag_s == True):
-            la_respuesta = "Ninguna de las opciones."
+            la_respuesta = "None of the options."
 
     dynamic_page = generate_dynamic_page(client_id, page_id, flow_name, pregunta, respuestas, telefono)
     
