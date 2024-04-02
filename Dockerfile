@@ -11,7 +11,7 @@ COPY . /app
 RUN pip install -r requirements.txt
 
 # Expose necessary ports
-EXPOSE 80
+EXPOSE 443
 EXPOSE 8000
 
 # Run the Python script
