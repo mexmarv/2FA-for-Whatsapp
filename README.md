@@ -1,6 +1,6 @@
 # 2FA for Whatsapp/Chatbots using Chatfuel (if needed) and known answers from client_id
 
-This repository contains Pythn code for implementing Two-Factor Authentication (2FA) using known answer (birth date) from a client_id for WhatsApp/Chat Bots. This project allows you to generate dynamic web pages with questions for users to answer, validate their responses, and redirect them to a WhatsApp deep link for further interaction, while responding back to chatfuel to validate the user for the desired flow or block. You can learn from this repository and integrate accordingly.
+This repository contains Python code for implementing Two-Factor Authentication (2FA) using known answer (birth date) from a client_id for WhatsApp/Chat Bots. This project allows you to generate dynamic web pages with questions for users to answer, validate their responses, and redirect them to a WhatsApp deep link for further interaction, while responding back to chatfuel to validate the user for the desired flow or block. You can learn from this repository and integrate accordingly.
 
 [![dependency - Python](https://img.shields.io/badge/dependency-Python-blue)](https://pypi.org/project/Python)
 ![GitHub language count](https://img.shields.io/github/languages/count/mexmarv/2FA-for-Whatsapp)
