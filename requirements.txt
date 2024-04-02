@@ -1,0 +1,5 @@
+fastapi==0.110.0
+Flask==3.0.2
+Requests==2.31.0
+uvicorn==0.29.0
+Werkzeug==3.0.1
