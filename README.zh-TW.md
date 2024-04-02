@@ -6,7 +6,7 @@
 
 ## 配置
 
-Before running the script, you need to configure the following variables:
+在運行腳本之前，需要配置以下變數：
 
 -   `HOST`：伺服器主機（替換為您託管的伺服器）。
 -   `URL_SUFFIX`：足以存取伺服器的 URL（例如“http&#x3A;//”或“https&#x3A;//”，但建議使用 https，因為 Whatsapp 和 Google 重定向到安全性）。
@@ -34,7 +34,7 @@ Before running the script, you need to configure the following variables:
 
 ## Docker安裝
 
-或者，您可以在 Docker 容器中執行該腳本。按著這些次序：
+Alternatively, you can run the script within a Docker container. Follow these steps:
 
 1.  建置 Docker 映像：
 
@@ -44,7 +44,7 @@ Before running the script, you need to configure the following variables:
 
         docker run -p 443:443 -p 8000:8000 mn_mfa
 
-此伺服器可透過本機上的連接埠 443 和 8000 存取。
+可以透過本機主機上的連接埠 443 和 8000 存取該伺服器。
 
 ## HTTPS（需要）
 
