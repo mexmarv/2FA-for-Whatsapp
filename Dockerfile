@@ -8,7 +8,7 @@ WORKDIR /app
 COPY . /app
 
 # Install dependencies
-RUN pip install --no-cache-dir fastapi uvicorn waitress flask requests
+RUN pip install -r requirements.txt
 
 # Expose necessary ports
 EXPOSE 80
