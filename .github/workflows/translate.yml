@@ -38,4 +38,4 @@ jobs:
       - name: Adding README - Español
         uses: dephraiim/translate-readme@main
         with:
-          LANG: es-MX
+          LANG: es
