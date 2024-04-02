@@ -25,6 +25,9 @@ on:
 permissions:
   contents: read
 
+paths-ignore:
+      - 'loadtest.py'
+      - '*.md'
 jobs:
   codacy-security-scan:
     permissions:
