@@ -15,6 +15,9 @@ name: Codacy Security Scan
 
 on:
   push:
+    paths-ignore:
+      - 'loadtest.py'
+      - '*.md'
     branches: [ "main" ]
   pull_request:
     # The branches below must be a subset of the branches above
@@ -25,9 +28,6 @@ on:
 permissions:
   contents: read
 
-paths-ignore:
-      - 'loadtest.py'
-      - '*.md'
 jobs:
   codacy-security-scan:
     permissions:
