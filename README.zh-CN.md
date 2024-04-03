@@ -44,7 +44,7 @@
 
         docker run -p 443:443 -p 8000:8000 mn_mfa
 
-可以通过本地主机上的端口 443 和 8000 访问该服务器。
+该服务器可通过本地主机上的端口 443 和 8000 访问。
 
 ## HTTPS（需要）
 
@@ -73,7 +73,7 @@
 2.  阅读代码很容易，您可以与任何外部 API 重新集成以利用答案和交易。我生成了这个简单的系统图以供理解（感谢 AI/GPT 对我的输入的帮助）。
     <center><img src="/2FASystemDiagram.svg"/></center>
 3.  不要通过聊天渠道返回答案，这违背了 2FA 的目的。
-4.  我添加了`loadtest.py`为了好玩，您可以使用尽可能多的请求和线程进行负载测试来测试您的 Docker 或生产环境。我禁用了证书 SSL 检查，因为这需要太多时间来验证。在 docker 中运行最新 Ubuntu 的 1 CPU、8 GB RAM Docker 实例中出现一些有趣的结果：
+4.  我添加了`loadtest.py`为了好玩，您可以使用尽可能多的请求和线程进行负载测试来测试您的 Docker 或生产环境。我禁用了证书 SSL 检查，因为这需要太多时间来验证。在 docker 中运行最新 Ubuntu 的 1 CPU、1 GB RAM Docker 实例中出现一些有趣的结果：
 
 
     10,000 tries with 1000 threads. Running on Docker, no certificate checking.
