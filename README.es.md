@@ -8,7 +8,7 @@ Este repositorio contiene código Python para implementar la autenticación de d
 
 Antes de ejecutar el script, debe configurar las siguientes variables:
 
--   `HOST`: El servidor host (Reemplazar con el servidor que está alojando).
+-   `HOST`: El host del servidor (Reemplace con el servidor con el que está hospedando).
 -   `URL_SUFFIX`: La URL es suficiente para acceder al servidor (por ejemplo, "http&#x3A;//" o "https&#x3A;//", pero sugiere https ya que Whatsapp y Google redirigen a seguridad).
 -   `expiration`: Tiempo en segundos para eliminar páginas generadas dinámicamente.
 -   `api_port`: El puerto para el servidor API. Aquí recibe client_id y la pregunta para ser atendida.
@@ -73,7 +73,7 @@ Dado que Whatsapp no ​​puede realizar ciertas preguntas con MFA y puede aute
 2.  Leer el código es fácil, puede volver a integrarlo con cualquier API externa para utilizar respuestas y transacciones. Generé este diagrama de sistema simple para comprenderlo (gracias a AI/GPT por la ayuda de mis aportes).
     <center><img src="/2FASystemDiagram.svg"/></center>
 3.  No devuelva las respuestas a través del canal de chat, esto anula el propósito de 2FA.
-4.  yo añadí`loadtest.py`que, por diversión, puede realizar pruebas de carga con tantas solicitudes e hilos para probar su Docker o su entorno de producción. Desactivé la verificación del certificado SSL porque lleva demasiado tiempo validarlo. Algunos resultados interesantes en una instancia Docker de 1 CPU y 8 GB de RAM ejecutando la última versión de Ubuntu en Docker:
+4.  yo añadí`loadtest.py`que, por diversión, puede realizar pruebas de carga con tantas solicitudes e hilos para probar su Docker o su entorno de producción. Desactivé la verificación del certificado SSL porque lleva demasiado tiempo validarlo. Algunos resultados interesantes en una instancia Docker de 1 CPU y 1 GB de RAM ejecutando la última versión de Ubuntu en Docker:
 
 
     10,000 tries with 1000 threads. Running on Docker, no certificate checking.
