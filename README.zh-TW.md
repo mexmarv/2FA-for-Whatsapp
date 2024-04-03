@@ -34,7 +34,7 @@
 
 ## Docker安裝
 
-Alternatively, you can run the script within a Docker container. Follow these steps:
+或者，您可以在 Docker 容器中執行該腳本。按著這些次序：
 
 1.  建置 Docker 映像：
 
@@ -44,7 +44,7 @@ Alternatively, you can run the script within a Docker container. Follow these st
 
         docker run -p 443:443 -p 8000:8000 mn_mfa
 
-可以透過本機主機上的連接埠 443 和 8000 存取該伺服器。
+此伺服器可透過本機上的連接埠 443 和 8000 存取。
 
 ## HTTPS（需要）
 
@@ -70,10 +70,10 @@ Alternatively, you can run the script within a Docker container. Follow these st
 
 1.  在 chatfuel 中產生一個工作流程，驗證使用者的某些交易。附有範例工作流程。
     <center><img src="/chatfuel.png"/></center>
-2.  Reading through code is easy, you can integrate back with any external API to make use of answers and trasnactions. I generated this simple System Diagram for understanding (thanks to AI/GPT for the help from my input).
+2.  閱讀程式碼很容易，您可以與任何外部 API 重新整合以利用答案和交易。我產生了這個簡單的系統圖以供理解（感謝 AI/GPT 對我的意見的幫助）。
     <center><img src="/2FASystemDiagram.svg"/></center>
 3.  不要透過聊天管道返回答案，這違背了 2FA 的目的。
-4.  我添加了`loadtest.py`為了好玩，您可以使用盡可能多的請求和執行緒進行負載測試來測試您的 Docker 或生產環境。我禁用了憑證 SSL 檢查，因為這需要太多時間來驗證。在 docker 中執行最新 Ubuntu 的 1 CPU、8 GB RAM Docker 實例中出現一些有趣的結果：
+4.  我添加了`loadtest.py`為了好玩，您可以使用盡可能多的請求和執行緒進行負載測試來測試您的 Docker 或生產環境。我禁用了憑證 SSL 檢查，因為這需要太多時間來驗證。在 docker 中執行最新 Ubuntu 的 1 CPU、1 GB RAM Docker 實例中出現一些有趣的結果：
 
 
     10,000 tries with 1000 threads. Running on Docker, no certificate checking.
