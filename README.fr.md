@@ -62,7 +62,7 @@ Vous pouvez toujours obtenir un SSL gratuit pendant 90 jours auprès de nombreux
 
 Une fois le script exécuté, vous pouvez accéder aux pages générées dynamiquement en visitant les URL fournies par l'API. Les utilisateurs peuvent répondre aux multiples réponses à partir de deux générateurs aléatoires, et leurs réponses seront validées, renvoyées à Chatfuel et redirigées vers un lien profond WhatsApp pour une action ultérieure à mesure que votre chatbot répond.
 
-De plus, pour chaque réponse réussie, l'horodatage et l'adresse IP avec d'autres données sont enregistrés dans « logs.db », que vous pouvez utiliser pour vous aider si un utilisateur déclare qu'il n'a pas effectué la transaction, vous disposez d'informations pour qu'il réponde correctement pour une réponse correcte. IP et quelques données supplémentaires. Non-répudiation de certaines lois, cette DB aide.
+Also, for every successful answer, the timestamp and IP adress with other data is saved in ´logs.db´, which you can use to help if a user states that he did not do the transaction, you have information he answer correctly forn an IP and some extra data. Non repudiation for certain laws, this DB helps.
 
 ## Remarques:
 
@@ -73,7 +73,7 @@ Whatsapp ne pouvant pas répondre à certaines questions par MFA et ne pouvant p
 2.  La lecture du code est facile, vous pouvez réintégrer n'importe quelle API externe pour utiliser les réponses et les transactions. J'ai généré ce diagramme système simple pour comprendre (merci à AI/GPT pour l'aide de ma contribution).
     <center><img src="/2FASystemDiagram.svg"/></center>
 3.  Ne renvoyez pas les réponses via le canal de discussion, cela va à l’encontre de l’objectif de 2FA.
-4.  J'ai ajouté`loadtest.py`que, pour le plaisir, vous pouvez charger avec autant de requêtes et de threads pour tester votre Docker ou votre environnement de production. J'ai désactivé la vérification du certificat SSL car la validation prend trop de temps. Quelques résultats intéressants dans une instance Docker de 1 processeur et 8 Go de RAM exécutant la dernière version d'Ubuntu dans Docker :
+4.  J'ai ajouté`loadtest.py`que, pour le plaisir, vous pouvez charger avec autant de requêtes et de threads pour tester votre Docker ou votre environnement de production. J'ai désactivé la vérification du certificat SSL car la validation prend trop de temps. Quelques résultats intéressants dans une instance Docker de 1 processeur et 1 Go de RAM exécutant la dernière version d'Ubuntu dans Docker :
 
 
     10,000 tries with 1000 threads. Running on Docker, no certificate checking.
