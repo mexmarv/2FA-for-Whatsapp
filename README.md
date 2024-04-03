@@ -84,7 +84,7 @@ With Whatsapp not being able to MFA certain questions and being able to authenti
 2. Reading through code is easy, you can integrate back with any external API to make use of answers and trasnactions. I generated this simple System Diagram for understanding (thanks to AI/GPT for the help from my input).
    <center><img src="/2FASystemDiagram.svg"/></center>
 3. Do not return the answers through the chat channel, this defeats the purpose of 2FA.
-4. I added `loadtest.py` which for fun you can loadtest with as many requests and threads to test your Docker or production environment. I disabled certificate SSL checking as this takes too much time to validate. Some interesting results in a 1 CPU, 8 GB RAM Docker Instance runing latest Ubuntu in docker:
+4. I added `loadtest.py` which for fun you can loadtest with as many requests and threads to test your Docker or production environment. I disabled certificate SSL checking as this takes too much time to validate. Some interesting results in a 1 CPU, 1 GB RAM Docker Instance runing latest Ubuntu in docker:
 ```
 10,000 tries with 1000 threads. Running on Docker, no certificate checking.
 Total time taken: 6.910074949264526 seconds
